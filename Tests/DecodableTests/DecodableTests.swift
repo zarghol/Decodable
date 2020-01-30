@@ -14,17 +14,16 @@ import struct Decodable.KeyPath
 
 class DecodableTests: XCTestCase {
     
-    private func readJsonFile(_ file: String) -> NSDictionary {
-        let filePath = (Bundle(for: object_getClass(self)!).resourcePath! as NSString).appendingPathComponent(file)
-        let jsonString = try! String(contentsOfFile: filePath)
-        let jsonData = jsonString.data(using: String.Encoding.utf8)!
-		return try! JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
+    private func readJsonFile(_ file: Files) -> NSDictionary {
+        let jsonString = file.rawValue
+        let jsonData = jsonString.data(using: .utf8)!
+		return try! JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers) as! NSDictionary
     }
-    
+
     func testDecodeRepositoryExampleShouldSuccess() {
         // given
-        let json = readJsonFile("Repository.json")
-        
+        let json = readJsonFile(.repository)
+
         // when
         do {
             let repository = try Repository.decode(json)
@@ -57,7 +56,7 @@ class DecodableTests: XCTestCase {
     private let Count = 500
     
     func testDecodeArrayOfRepositoriesAndMeasureTime() {
-        let json = readJsonFile("Repository.json")
+        let json = readJsonFile(.repository)
         let array = NSArray(array: Array(repeating: json, count: Count))
         
         var result: [Repository] = []
@@ -72,7 +71,7 @@ class DecodableTests: XCTestCase {
     }
     
     func testCustomParseAndMeasureTime() {
-        let json = readJsonFile("Repository.json")
+        let json = readJsonFile(.repository)
         let array = NSArray(array: Array(repeating: json, count: Count))
         
         var result: [Repository] = []
@@ -129,8 +128,8 @@ class DecodableTests: XCTestCase {
     
     func testDecodeRepositoryExampleShouldThrowMissingKeyException() {
         // given
-        let json = readJsonFile("missingKey.json")
-        
+        let json = readJsonFile(.missingKey)
+
         // when
         do {
             _ = try Repository.decode(json)
@@ -146,7 +145,7 @@ class DecodableTests: XCTestCase {
     
     func testDecodeRepositoryExampleShouldThrowTypeMismatchException() {
         // given
-        let json = readJsonFile("typeMismatch.json")
+        let json = readJsonFile(.typeMismatch)
         
         // when
         do {
@@ -163,7 +162,7 @@ class DecodableTests: XCTestCase {
     
     func testDecodeRepositoryExampleNestedShouldThrowTypeMismatchException() {
         // given
-        let json: NSDictionary = ["key": readJsonFile("typeMismatch.json")]
+        let json: NSDictionary = ["key": readJsonFile(.typeMismatch)]
         
         // when
         do {
@@ -180,9 +179,7 @@ class DecodableTests: XCTestCase {
     
     func testDecodeRepositoryExampleShouldThrowNoJsonObjectException() {
         // given
-        let filePath = (Bundle(for: object_getClass(self)!).resourcePath! as NSString).appendingPathComponent("NoJsonObject.json")
-        let jsonString = try! String(contentsOfFile: filePath)
-        
+        let jsonString = Files.noJsonObject.rawValue
         // when
         do {
             _ = try Repository.decode(jsonString)

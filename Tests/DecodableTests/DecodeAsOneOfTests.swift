@@ -14,17 +14,15 @@ import struct Decodable.KeyPath
 
 class DecodeAsOneOfTests: XCTestCase {
     
-    private func readJsonFile(_ file: String) -> NSDictionary {
-        let filePath = (Bundle(for: object_getClass(self)!).resourcePath! as NSString).appendingPathComponent(file)
-		print(filePath)
-        let jsonString = try! String(contentsOfFile: filePath)
-		let jsonData = jsonString.data(using: String.Encoding.utf8)!
-		return try! JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
+    private func readJsonFile(_ file: Files) -> NSDictionary {
+        let jsonString = file.rawValue
+        let jsonData = jsonString.data(using: .utf8)!
+        return try! JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers) as! NSDictionary
     }
     
     func testDecodingSubtypesShouldSucceed() {
         // given
-        let json = readJsonFile("Vehicle.json")
+        let json = readJsonFile(.vehicle)
         
         // when
         do {
